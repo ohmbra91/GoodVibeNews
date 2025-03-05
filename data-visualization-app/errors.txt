@@ -1,0 +1,11 @@
+The script from “http://localhost:3000/src/index.js” was loaded even though its MIME type (“text/html”) is not a valid JavaScript MIME type. localhost:3000
+Uncaught SyntaxError: expected expression, got '<' index.js:1:1
+[HMR] Waiting for update signal from WDS... vendors~main.chunk.js:36908:15
+Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://localhost:5000/api/articles. (Reason: CORS header ‘Access-Control-Allow-Origin’ missing). Status code: 200.
+Error fetching articles: Error: Network Error
+    createError createError.js:16
+    handleError xhr.js:99
+vendors~main.chunk.js:30106:24
+Fetched articles: 
+Array []
+main.chunk.js:53:15
