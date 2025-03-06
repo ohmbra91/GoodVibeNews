@@ -1,7 +1,16 @@
-from scrapy.utils.project import get_project_settings
-settings = get_project_settings()
-settings.get("HTTP_PROXY")  # Check if a global HTTP proxy is set
-settings.get("DOWNLOADER_MIDDLEWARES")  # Check for proxy middlewares
+Git Commands
+
+Initialize Repository: git init
+Add Files: git add .
+Commit Changes: git commit -m "Your commit message"
+View Commit History: git log
+Roll Back to Previous Commit: git reset --hard <commit-hash>
+Move Forward to Specific Commit: git reset --hard <commit-hash>
+Add Remote Repository: git remote add origin https://github.com/yourusername/your-repo-name.git
+Push Changes to GitHub: git push -u origin master
+Clone Repository: git clone https://github.com/yourusername/your-repo-name.git
+
+
 
 #Get my source IP
 fetch('https://httpbin.org/ip')
@@ -16,24 +25,7 @@ OpenVPN / IKEv2 password    3r8gBhkOs6PuHmwL2Myba3aEKxaKSoVV
 
 export PYTHONPATH=/home/ubuntu/scrapers/data-visualization-app
 
-css index
-
-/* You can add global styles here */
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-      monospace;
-  }
-
-  sudo pkill -SIGTERM openvpn
+sudo pkill -SIGTERM openvpn
 sudo nohup openvpn --config /etc/openvpn/client/client.conf > /var/log/openvpn.log 2>&1 &
 
 after setting up vpn..
@@ -45,79 +37,3 @@ Run background processes
 pkill -f "python app.py"
 export PYTHONPATH=/home/ubuntu/scrapers/data-visualization-app
 nohup python /home/ubuntu/scrapers/data-visualization-app/backend/app.py > backend.log 2>&1 &
-
-tom_spider
-
-    def parse(self, response):
-        try:
-            # Decode the response body using utf-8
-            body = response.body.decode('utf-8')
-        except UnicodeDecodeError:
-            self.logger.error("Failed to decode response body with utf-8 encoding")
-            return
-
-        articles = re.findall(r'<script type=.application.ld.json. id=.listing-ld.>{.@graph.:(.+?),.@context.:.http:..schema.org..<.script>', body, re.S)
-        
-        jsonArticles = json.loads(''.join(articles))
-        
-        for article in jsonArticles:
-            articleLoader = TomArticleLoader(item=TomArticle(), selector=article)
-            articleLoader.add_value('datePublished', article['datePublished'])
-            articleLoader.add_value('articleSection', article['articleSection'])
-            articleLoader.add_value('author', article['author'][0]['name'])
-            articleLoader.add_value('headline', article['headline'])
-            articleLoader.add_value('link', article['url'])
-            article_url = article['url']
-            # Check if the article already exists in the database
-            self.cursor.execute("SELECT 1 FROM articles WHERE link = %s", (article_url,))
-            if not self.cursor.fetchone():
-                logging.debug(f"Article not found in database, fetching content: {article_url}")
-                #emit_update_articles()  # 🔥 Notify WebSocket clients
-                yield scrapy.Request(article_url, callback=self.parse_article, meta={'loader': articleLoader})
-            else:
-                logging.debug(f"Article already exists in database: {article_url}")
-
-database.py
-
-import psycopg2
-
-def get_articles():
-    connection = psycopg2.connect(
-        host="localhost",
-        database="news_scraper_db",
-        user="ubuntu",
-        password="scrapy"
-    )
-    cursor = connection.cursor()
-    cursor.execute("SELECT agency, section, author, date, headline, link, sentiment_score, content FROM articles")
-    rows = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-    articles = []
-    for row in rows:
-        articles.append({
-            "agency": row[0],
-            "section": row[1],
-            "author": row[2],
-            "datePublished": row[3],
-            "headline": row[4],
-            "link": row[5],
-            "sentiment_score": row[6],
-            "content": row[7]
-        })
-    return articles
-
-def update_articles():
-    connection = psycopg2.connect(
-        host="localhost",
-        database="news_scraper_db",
-        user="ubuntu",
-        password="scrapy"
-    )
-    cursor = connection.cursor()
-    # Example update query - replace with your actual update logic
-    cursor.execute("UPDATE articles SET sentiment_score = sentiment_score + 1 WHERE sentiment_score < 0")
-    connection.commit()
-    cursor.close()
-    connection.close()
