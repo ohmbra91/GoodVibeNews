@@ -33,3 +33,6 @@ newsenv/
 # Logs
 *.log
 nohup.out
+
+# sensitive
+secrets

@@ -20,7 +20,8 @@ print(response.text)
 #compare with CURL
 curl https://httpbin.org/ip
 
-OpenVPN / IKEv2 username    pkill -f app.py
+
+pkill -f app.py
 python /home/ubuntu/scrapers/data-visualization-app/backend/app.py
 OpenVPN / IKEv2 password    3r8gBhkOs6PuHmwL2Myba3aEKxaKSoVV
 
@@ -38,3 +39,7 @@ Run background processes
 pkill -f "python app.py"
 export PYTHONPATH=/home/ubuntu/scrapers/data-visualization-app
 nohup python /home/ubuntu/scrapers/data-visualization-app/backend/app.py > backend.log 2>&1 &
+sudo nohup openvpn --config /etc/openvpn/client/nl-free-112.protonvpn.tcp.ovpn >/home/ubuntu/openvpn.log 2>&1 &
+
+
+sudo nano /etc/nginx/sites-available/default
