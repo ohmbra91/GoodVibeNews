@@ -11,6 +11,7 @@ import logging
 from tomscraper.items import TomArticle
 from shared.database import get_articles  # Import get_articles from shared.database
 from dotenv import load_dotenv
+import os
 
 # Load environment variables from .env file
 load_dotenv()
@@ -18,7 +19,7 @@ load_dotenv()
 logging.basicConfig(level=logging.DEBUG)
 
 # Set up OpenAI API key
-openai.api_key = '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'
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def get_sentiment_score(text):
     try:
