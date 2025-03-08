@@ -15,3 +15,4 @@ class TomArticle(scrapy.Item):
     link = scrapy.Field()
     sentiment_score = scrapy.Field()
     content = scrapy.Field()  # Add the content field
+    is_political = scrapy.Field()
