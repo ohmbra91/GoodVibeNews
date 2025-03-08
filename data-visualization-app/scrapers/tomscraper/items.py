@@ -5,6 +5,7 @@
 
 import scrapy
 
+
 class TomArticle(scrapy.Item):
     agency = scrapy.Field()
     datePublished = scrapy.Field()

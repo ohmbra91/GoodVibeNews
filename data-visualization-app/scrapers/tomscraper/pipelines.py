@@ -1,17 +1,15 @@
 import sys
 sys.path.append('/home/ubuntu/scrapers/data-visualization-app')
-
 import psycopg2
 from itemadapter import ItemAdapter
 from flask_socketio import SocketIO
-from scrapy.exceptions import DropItem
 from flask import Flask
 import openai
 import logging
-from tomscraper.items import TomArticle
 from shared.database import get_articles  # Import get_articles from shared.database
 from dotenv import load_dotenv
 import os
+
 
 # Load environment variables from .env file
 load_dotenv()

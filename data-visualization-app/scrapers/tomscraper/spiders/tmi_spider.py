@@ -1,13 +1,8 @@
 import scrapy
-import re
-import json
 import logging
 import psycopg2
 from tomscraper.itemloaders import TomArticleLoader
 from tomscraper.items import TomArticle
-import random
-from scrapy.utils.response import get_base_url
-from urllib.parse import urljoin
 from dateutil import parser
 import pytz
 

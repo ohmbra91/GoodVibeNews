@@ -5,8 +5,6 @@ from tomscraper.itemloaders import TomArticleLoader
 from tomscraper.items import TomArticle
 import logging
 import psycopg2
-from scrapy.utils.response import get_base_url
-from urllib.parse import urljoin
 from dateutil import parser
 import pytz
 from urllib.parse import urlparse, urlunparse
