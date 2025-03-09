@@ -13,6 +13,8 @@ cd /home/ubuntu/scrapers/data-visualization-app/scrapers/tomscraper
 scrapy crawl tom_spider
 scrapy crawl mt_spider
 scrapy crawl tmi_spider  # Add additional spiders as needed
+scrapy crawl tvm_spider
+scrapy crawl lm_spider
 
 # Deactivate the virtual environment
 deactivate

@@ -63,7 +63,7 @@ function App() {
         .filter(article => (showPositive ? article.sentiment_score > 0 : true)) // Filter positive news
         .filter(article => (showNonPolitical ? !article.is_political : true)); // Filter non-political news
 
-    const latestArticles = filteredArticles.slice(0, 39);
+    const latestArticles = filteredArticles.slice(0, 99);
 
     return (
         <Router>
