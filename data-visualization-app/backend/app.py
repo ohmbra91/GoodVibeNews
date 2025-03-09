@@ -1,10 +1,14 @@
-import eventlet
 import os
+import sys
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_socketio import SocketIO
 import psycopg2
 import logging
+
+# Add the parent directory to the system path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from shared.database import get_articles, update_articles  # Import get_articles and update_articles from shared.database
 
 # Configure logging

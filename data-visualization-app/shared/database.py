@@ -10,7 +10,7 @@ def get_articles():
     cursor = connection.cursor()
 
     # ✅ Fetch articles sorted by date in DESC order (latest first)
-    cursor.execute("SELECT agency, section, author, date, headline, link, sentiment_score, content FROM articles ORDER BY date DESC")
+    cursor.execute("SELECT agency, section, author, date, headline, link, is_political, sentiment_score FROM articles ORDER BY date DESC")
 
     rows = cursor.fetchall()
     cursor.close()
@@ -25,8 +25,8 @@ def get_articles():
             "datePublished": row[3].isoformat() if row[3] else None,  # Convert to ISO 8601
             "headline": row[4],
             "link": row[5],
-            "sentiment_score": row[6],
-            "content": row[7]
+            "is_political": row[6],
+            "sentiment_score": row[7]
         })
     return articles
 

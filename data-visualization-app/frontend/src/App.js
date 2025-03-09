@@ -17,6 +17,7 @@ socket.on("update_articles", (data) => {
 function App() {
     const [articles, setArticles] = useState([]);
     const [showPositive, setShowPositive] = useState(true);
+    const [showNonPolitical, setShowNonPolitical] = useState(false); // New state for non-political filter
     const [showModal, setShowModal] = useState(false); // ✅ FIXED: Properly defined state
     const [showAboutModal, setShowAboutModal] = useState(false); // State for About modal
 
@@ -58,22 +59,38 @@ function App() {
         incrementVisitorCount();
     }, []);
 
-    const filteredArticles = showPositive ? articles.filter(article => article.sentiment_score > 0) : articles;
+    const filteredArticles = articles
+        .filter(article => (showPositive ? article.sentiment_score > 0 : true)) // Filter positive news
+        .filter(article => (showNonPolitical ? !article.is_political : true)); // Filter non-political news
+
     const latestArticles = filteredArticles.slice(0, 39);
 
     return (
         <Router>
             <div className="App container">
                 <nav className="navbar">
-                    <div className="navbar-content">
-                    </div>
+                    <div className="navbar-content"></div>
                 </nav>
 
                 <Switch>
                     <Route exact path="/">
                         <div className="toggle-container my-4 text-center">
-                            <input className="form-check-input" type="checkbox" id="togglePositive" checked={showPositive} onChange={() => setShowPositive(!showPositive)} />
-                            <label className="form-check-label ms-2" htmlFor="togglePositive">Show only positive sentiment articles</label>
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id="togglePositive"
+                                checked={showPositive}
+                                onChange={() => setShowPositive(!showPositive)}
+                            />
+                            <label className="form-check-label ms-2" htmlFor="togglePositive">positive news</label>
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id="toggleNonPolitical"
+                                checked={showNonPolitical}
+                                onChange={() => setShowNonPolitical(!showNonPolitical)}
+                            />
+                            <label className="form-check-label ms-2" htmlFor="toggleNonPolitical">hide political news</label>
                         </div>
 
                         <div className="row">
@@ -137,12 +154,12 @@ function App() {
                 {showAboutModal && (
                     <div className="modal-overlay" onClick={() => setShowAboutModal(false)}>
                         <div className="modal" onClick={(e) => e.stopPropagation()}>
-                        <h2>Good Vibe News Malta – A Breath of Fresh Air in the News World!</h2>
-                        <p>For a long time, I noticed that the majority of news is overwhelmingly negative. During stressful times, I found it hard to take in so much negativity, and I knew I wasn’t alone. That’s when I decided to do something about it.</p>
-                        <p>I created <strong>Good Vibe News Malta</strong> to <strong>shift the mindset</strong> and bring more balance to the way we consume news. This platform focuses on <strong>positive stories, inspiring achievements, and uplifting events</strong> happening in Malta—because good things <strong>deserve</strong> to be highlighted too!</p>
-                        <p>If you believe in this mission and want to help keep the positivity flowing, consider supporting this project. The aim is to add more sources with the possibility of including a section for international news.</p> 
-                        <p>Your contribution helps cover hosting costs, content curation, and ensures that more people can access good news daily.</p>
-                        <p>Let’s spread good vibes together! 🌞✨</p>
+                            <h2>Good Vibe News Malta – A Breath of Fresh Air in the News World!</h2>
+                            <p>For a long time, I noticed that the majority of news is overwhelmingly negative. During stressful times, I found it hard to take in so much negativity, and I knew I wasn’t alone. That’s when I decided to do something about it.</p>
+                            <p>I created <strong>Good Vibe News Malta</strong> to <strong>shift the mindset</strong> and bring more balance to the way we consume news. This platform focuses on <strong>positive stories, inspiring achievements, and uplifting events</strong> happening in Malta—because good things <strong>deserve</strong> to be highlighted too!</p>
+                            <p>If you believe in this mission and want to help keep the positivity flowing, consider supporting this project. The aim is to add more sources with the possibility of including a section for international news.</p>
+                            <p>Your contribution helps cover hosting costs, content curation, and ensures that more people can access good news daily.</p>
+                            <p>Let’s spread good vibes together! 🌞✨</p>
                             <button className="modal-close" onClick={() => setShowAboutModal(false)}>Close</button>
                         </div>
                     </div>
