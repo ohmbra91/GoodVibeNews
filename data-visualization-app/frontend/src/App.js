@@ -74,29 +74,42 @@ function App() {
 
                 <Switch>
                     <Route exact path="/">
-                        <div className="toggle-container my-4 text-center">
+                    <div className="toggle-container my-4 text-center">
+                        <span className="mx-3">
                             <input
-                                className="form-check-input"
+                                className="form-check-input me-2"
                                 type="checkbox"
                                 id="togglePositive"
                                 checked={showPositive}
                                 onChange={() => setShowPositive(!showPositive)}
                             />
-                            <label className="form-check-label ms-2" htmlFor="togglePositive">positive news</label>
+                            <label className="form-check-label" htmlFor="togglePositive">positive news</label>
+                        </span>
+                        
+                        <span className="mx-3">
                             <input
-                                className="form-check-input"
+                                className="form-check-input me-2"
                                 type="checkbox"
                                 id="toggleNonPolitical"
                                 checked={showNonPolitical}
                                 onChange={() => setShowNonPolitical(!showNonPolitical)}
                             />
-                            <label className="form-check-label ms-2" htmlFor="toggleNonPolitical">hide political news</label>
-                        </div>
-
+                            <label className="form-check-label" htmlFor="toggleNonPolitical">hide political news</label>
+                        </span>
+                    </div>
                         <div className="row">
                             {latestArticles.map((article, index) => (
                                 <div className="col-md-4 mb-4" key={index}>
                                     <div className="card article-card shadow-sm">
+                                        {/* ✅ Display Article Image Here */}
+                                        {article.image_url && (
+                                            <img 
+                                                src={article.image_url} 
+                                                className="card-img-top" 
+                                                alt={article.headline} 
+                                                style={{ maxHeight: '200px', objectFit: 'cover', width: '100%' }} 
+                                            />
+                                        )}
                                         <div className="card-body">
                                             <h5 className="card-title">
                                                 <a href={article.link} target="_blank" rel="noopener noreferrer" className="article-link">

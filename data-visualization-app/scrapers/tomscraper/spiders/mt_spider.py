@@ -1,10 +1,8 @@
 import scrapy
-import re
-import json
-from tomscraper.itemloaders import TomArticleLoader
-from tomscraper.items import TomArticle
 import logging
 import psycopg2
+from tomscraper.itemloaders import TomArticleLoader
+from tomscraper.items import TomArticle
 from dateutil import parser
 import pytz
 
@@ -14,13 +12,8 @@ def normalize_date(date_str):
     """
     try:
         parsed_date = parser.parse(date_str)
-
-        # Convert to UTC timezone (to avoid inconsistencies)
         parsed_date = parsed_date.astimezone(pytz.UTC)
-
-        # Format as ISO 8601 before inserting into DB
-        return parsed_date.strftime('%Y-%m-%dT%H:%M:%S%z')  # Example: '2025-02-26T18:42:00+0000'
-    
+        return parsed_date.strftime('%Y-%m-%dT%H:%M:%S%z')  
     except Exception as e:
         print(f"⚠️ Error parsing date: {date_str}, {e}")
         return None
@@ -45,7 +38,6 @@ class MaltaTodaySpider(scrapy.Spider):
         article_links = response.css('div.article.list-article a::attr(href)').getall()
         for link in article_links:
             article_url = response.urljoin(link)
-            # Check if the article already exists in the database
             self.cursor.execute("SELECT 1 FROM articles WHERE link = %s", (article_url,))
             if not self.cursor.fetchone():
                 logging.debug(f"Article not found in database, fetching content: {article_url}")
@@ -66,7 +58,13 @@ class MaltaTodaySpider(scrapy.Spider):
         articleLoader.add_css('author', 'div.article-meta span.name::text')
         articleLoader.add_css('link', 'link[rel="canonical"]::attr(href)')
         articleLoader.add_value('link', response.url)
-        articleLoader.add_value('agency', 'MT')  # Set the agency field
+        articleLoader.add_value('agency', 'MT')
+
+        # ✅ Extract article image URL
+        image_url = response.css('div.cover-photo img::attr(src)').get()
+        if image_url:
+            image_url = response.urljoin(image_url)
+        articleLoader.add_value('image_url', image_url)
 
         # Extract and clean content
         paragraphs = response.css('div.full-article div.content p::text').getall()

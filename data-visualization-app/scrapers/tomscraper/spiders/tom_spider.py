@@ -84,22 +84,30 @@ class TomSpiderSpider(scrapy.Spider):
             article_url = normalize_url(article['url'])
             articleLoader.add_value('link', article['url'])
 
-            # article_url = article['url']
-
             # ✅ Check if the article already exists in the database
             self.cursor.execute("SELECT 1 FROM articles WHERE link = %s", (article_url,))
             if not self.cursor.fetchone():
                 logging.debug(f"🆕 New article, fetching content: {article_url}")
-                yield scrapy.Request(article_url, callback=self.parse_article, meta={'loader': articleLoader})
+                yield scrapy.Request(article_url, callback=self.parse_article, meta={'loader': articleLoader, 'article_url': article_url})
             else:
                 logging.debug(f"✅ Article already exists: {article_url}")
 
     def parse_article(self, response):
         articleLoader = response.meta['loader']
-        article_content = ' '.join(response.css('article p::text').getall()).strip()  # Update the selector to match the actual content
-        logging.debug(f"Extracted article content: {article_content}")  # Add debug statement
+        article_url = response.meta['article_url']
+
+        # Extract article content
+        article_content = ' '.join(response.css('article p::text').getall()).strip()
         articleLoader.add_value('content', article_content)
-        articleLoader.add_value('agency', 'ToM')  # Set the agency field
+        articleLoader.add_value('agency', 'ToM')
+
+        # ✅ Extract the featured image
+        image_url = response.css('meta[property="og:image"]::attr(content)').get()  # Scrapes Open Graph image
+        if not image_url:
+            image_url = response.css('picture img::attr(src)').get()  # Alternative image scraping
+        if image_url:
+            articleLoader.add_value('image_url', image_url)  # Save image URL
+
         yield articleLoader.load_item()
 
     def close(self, reason):

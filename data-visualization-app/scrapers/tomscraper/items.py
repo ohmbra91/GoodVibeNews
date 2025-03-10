@@ -16,3 +16,4 @@ class TomArticle(scrapy.Item):
     sentiment_score = scrapy.Field()
     content = scrapy.Field()  # Add the content field
     is_political = scrapy.Field()
+    image_url = scrapy.Field()

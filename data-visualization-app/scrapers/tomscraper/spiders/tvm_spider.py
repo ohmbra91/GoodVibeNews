@@ -12,17 +12,12 @@ def normalize_date(date_str):
     """
     try:
         parsed_date = parser.parse(date_str)
-
-        # Convert to UTC timezone (to avoid inconsistencies)
         parsed_date = parsed_date.astimezone(pytz.UTC)
-
-        # Format as ISO 8601 before inserting into DB
-        return parsed_date.strftime('%Y-%m-%dT%H:%M:%S%z')  # Example: '2025-02-26T18:42:00+0000'
-    
+        return parsed_date.strftime('%Y-%m-%dT%H:%M:%S%z')  
     except Exception as e:
         print(f"⚠️ Error parsing date: {date_str}, {e}")
         return None
-    
+
 class TVMNewsSpider(scrapy.Spider):
     name = "tvm_spider"
     allowed_domains = ["tvmnews.mt"]
@@ -70,6 +65,12 @@ class TVMNewsSpider(scrapy.Spider):
         
         # Convert categories array to a comma-separated string
         categories_str = ', '.join(categories)
+
+        # ✅ Extract article image URL
+        image_url = response.css('div.post-image a::attr(href)').get()
+        if image_url:
+            image_url = response.urljoin(image_url)
+        articleLoader.add_value('image_url', image_url)
 
         # Add values to loader
         articleLoader.add_value('headline', headline)

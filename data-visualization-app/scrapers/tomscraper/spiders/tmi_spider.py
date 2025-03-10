@@ -12,13 +12,8 @@ def normalize_date(date_str):
     """
     try:
         parsed_date = parser.parse(date_str)
-
-        # Convert to UTC timezone (to avoid inconsistencies)
         parsed_date = parsed_date.astimezone(pytz.UTC)
-
-        # Format as ISO 8601 before inserting into DB
-        return parsed_date.strftime('%Y-%m-%dT%H:%M:%S%z')  # Example: '2025-02-26T18:42:00+0000'
-    
+        return parsed_date.strftime('%Y-%m-%dT%H:%M:%S%z')  
     except Exception as e:
         print(f"⚠️ Error parsing date: {date_str}, {e}")
         return None
@@ -43,7 +38,6 @@ class MaltaIndependentSpider(scrapy.Spider):
         article_links = response.css('article.entry-wrapper a::attr(href)').getall()
         for link in article_links:
             article_url = response.urljoin(link)
-            # Check if the article already exists in the database
             self.cursor.execute("SELECT 1 FROM articles WHERE link = %s", (article_url,))
             if not self.cursor.fetchone():
                 logging.debug(f"Article not found in database, fetching content: {article_url}")
@@ -58,26 +52,28 @@ class MaltaIndependentSpider(scrapy.Spider):
         articleLoader.add_css('author', 'meta[name="author"]::attr(content)')
         articleLoader.add_css('link', 'link[rel="canonical"]::attr(href)')
         articleLoader.add_value('link', response.url)
-        articleLoader.add_value('agency', 'TMI')  # Set the agency field
-        
-        # Handle missing articleSection
+        articleLoader.add_value('agency', 'TMI')  
+
+        # Extract the article image URL
+        image_url = response.css('div.image-section img::attr(src)').get()
+        if image_url:
+            image_url = response.urljoin(image_url)
+        articleLoader.add_value('image_url', image_url)  # Add image to loader
+
+        # Extract article section
         article_section = response.css('meta[property="article:section"]::attr(content)').get()
-        if article_section:
-            articleLoader.add_value('articleSection', article_section)
-        else:
-            articleLoader.add_value('articleSection', None)
+        articleLoader.add_value('articleSection', article_section if article_section else None)
 
         # Ensure author field is present
         author = articleLoader.get_output_value('author')
         if not author:
             articleLoader.add_value('author', "TMI")
 
-        # Extract all <p> tags and <br> tags within .text-container and join them into one string
+        # Extract article content
         paragraphs = response.css('.text-container p::text, .text-container p br::text, .text-container p span::text').getall()
         content = ' '.join(paragraphs).replace('\n', ' ').replace('\r', ' ')
         articleLoader.add_value('content', content)
 
-        #content = articleLoader.get_output_value('content')
         if not content:
             logging.warning(f"Content missing for article: {response.url}")
             return
@@ -88,7 +84,6 @@ class MaltaIndependentSpider(scrapy.Spider):
     def handle_error(self, failure):
         request = failure.request
         logging.error(f"Request failed with status {failure.value.response.status} for URL: {request.url}")
-        # Retry the request with a different User-Agent
         new_request = request.copy()
         new_request.dont_filter = True
         yield new_request

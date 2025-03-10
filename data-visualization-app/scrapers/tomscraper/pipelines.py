@@ -73,8 +73,8 @@ class SavingToPostgresPipeline(object):
         try:
             logging.debug(f"Storing item in database: {item}")  # Add debug statement
             self.curr.execute(""" 
-                INSERT INTO articles (agency, section, author, date, headline, link, sentiment_score, is_political, content) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) 
+                INSERT INTO articles (agency, section, author, date, headline, link, sentiment_score, is_political, content, image_url) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
                 ON CONFLICT (link) DO NOTHING;
             """, (
                 item["agency"],
@@ -85,7 +85,8 @@ class SavingToPostgresPipeline(object):
                 item["link"],
                 item["sentiment_score"],
                 item["is_political"],
-                item["content"]
+                item["content"],
+                item["image_url"],
             ))
             self.connection.commit()
             logging.debug(f"Saved article: {item['headline']}")
