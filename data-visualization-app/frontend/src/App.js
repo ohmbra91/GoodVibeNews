@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { fetchArticles } from './services/api';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { compareDesc } from 'date-fns';
 import './App.css';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import About from './About'; // Import the About component
 
-const socket = io('https://goodvibenews.live', { secure: true, transports: ['websocket'] });
+// const socket = io('https://goodvibenews.live', { secure: true, transports: ['websocket'] });
 
-socket.on("connect", () => console.log("WebSocket Connected!"));
-socket.on("update_articles", (data) => {
-    console.log("Received update:", data);
-});
+// socket.on("connect", () => console.log("WebSocket Connected!"));
+// socket.on("update_articles", (data) => {
+//     console.log("Received update:", data);
+// });
 
 function App() {
     const [articles, setArticles] = useState([]);
@@ -38,14 +38,14 @@ function App() {
         };
         getArticles();
 
-        socket.on('update_articles', (newArticles) => {
-            const sortedArticles = newArticles.sort((a, b) => compareDesc(new Date(a.datePublished), new Date(b.datePublished)));
-            setArticles(sortedArticles);
-        });
+        // socket.on('update_articles', (newArticles) => {
+        //     const sortedArticles = newArticles.sort((a, b) => compareDesc(new Date(a.datePublished), new Date(b.datePublished)));
+        //     setArticles(sortedArticles);
+        // });
 
-        return () => {
-            socket.off('update_articles');
-        };
+        // return () => {
+        //     socket.off('update_articles');
+        // };
     }, []);
     
     useEffect(() => {
